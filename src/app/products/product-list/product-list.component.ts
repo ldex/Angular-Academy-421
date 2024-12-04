@@ -1,72 +1,78 @@
-import { Component } from '@angular/core'
+import { AfterViewInit, Component, inject, OnDestroy, OnInit, ViewChild } from '@angular/core'
 import { Product } from '../../models/product.interface'
-import { CurrencyPipe, UpperCasePipe } from '@angular/common'
+import { AsyncPipe, CurrencyPipe, UpperCasePipe } from '@angular/common'
+import { ProductDetailComponent } from '../product-detail/product-detail.component'
+import { ProductService } from '../../services/product.service'
+import { Observable, Subscription } from 'rxjs'
+import { MaterialModule } from '../../material.module'
+import { MatPaginator } from '@angular/material/paginator'
+import { MatSort } from '@angular/material/sort'
+import { MatTableDataSource } from '@angular/material/table'
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop'
 
 @Component({
   selector: 'app-product-list',
-  imports: [CurrencyPipe, UpperCasePipe],
+  imports: [CurrencyPipe, UpperCasePipe, ProductDetailComponent, AsyncPipe, MaterialModule],
   templateUrl: './product-list.component.html',
   styleUrl: './product-list.component.scss'
 })
-export class ProductListComponent {
+export class ProductListComponent implements AfterViewInit, OnDestroy, OnInit {
   title: string = 'Products'
+  selectedProduct: Product
+  private productService = inject(ProductService)
+  products$: Observable<Product[]> = this.productService.products$.pipe()
 
-  products: Product[] = [
-    {
-      id: 1,
-      name: 'Trek SSL 2023',
-      price: 1799.9,
-      description: 'Racing bike.',
-      discontinued: false,
-      fixedPrice: false,
-      imageUrl:
-        'https://firebasestorage.googleapis.com/v0/b/angularstore-29f4b.appspot.com/o/products%2Ftrek.jpg?alt=media&token=42e1650e-7ff9-467f-bde7-0423786c94fd',
-      modifiedDate: new Date(2023, 12, 8),
-    },
-    {
-      id: 2,
-      name: 'City XT 2024',
-      price: 1659.5,
-      description: 'City bike.',
-      discontinued: true,
-      fixedPrice: false,
-      imageUrl:
-        'https://firebasestorage.googleapis.com/v0/b/angularstore-29f4b.appspot.com/o/products%2Fcity.jpg?alt=media&token=5a79c5c3-177f-44b3-b99e-fe6be97c4f7a',
-      modifiedDate: new Date(2024, 1, 12),
-    },
-    {
-      id: 3,
-      name: 'Cosmic Cobat 2023',
-      price: 1499.9,
-      description: 'Great bike.',
-      discontinued: false,
-      fixedPrice: false,
-      imageUrl:
-        'https://firebasestorage.googleapis.com/v0/b/angularstore-29f4b.appspot.com/o/products%2Fcosmic-cobat.jpg?alt=media&token=9df1af7a-9b79-4bf6-9b98-9079581fb7d1',
-      modifiedDate: new Date(2023, 1, 2),
-    },
-    {
-      id: 4,
-      name: 'Hero DTB 2023',
-      price: 1759,
-      description: "Champion's bike.",
-      discontinued: true,
-      fixedPrice: true,
-      imageUrl:
-        'https://firebasestorage.googleapis.com/v0/b/angularstore-29f4b.appspot.com/o/products%2Fhero-dtb.jpg?alt=media&token=8cda2f52-2b86-43eb-aa86-2537346e8736',
-      modifiedDate: new Date(2023, 1, 24),
-    },
-    {
-      id: 5,
-      name: 'S-WORKS 2024',
-      price: 1999.9,
-      description: 'Ultra bike.',
-      discontinued: false,
-      fixedPrice: false,
-      imageUrl:
-        'https://firebasestorage.googleapis.com/v0/b/angularstore-29f4b.appspot.com/o/products%2Fs-works.jpg?alt=media&token=5bf064a9-c8f7-4b47-a113-8825f95934f4',
-      modifiedDate: new Date(2024, 1, 19),
-    },
-  ]
+  onSelect(product: Product) {
+    this.selectedProduct = product
+  }
+
+  displayedColumns = ['id', 'name', 'description', 'price'];
+  dataSource: MatTableDataSource<Product>;
+  isLoading: boolean = false;
+
+  @ViewChild(MatPaginator) paginator: MatPaginator;
+  @ViewChild(MatSort) sort: MatSort;
+
+  sub: Subscription = new Subscription()
+
+  ngOnDestroy(): void {
+    this.sub.unsubscribe()
+  }
+
+  ngOnInit(): void {
+  }
+
+  constructor() {
+    this.loadProducts();
+  }
+
+  loadProducts(): void {
+    this.dataSource = new MatTableDataSource();
+    this.isLoading = true;
+    this
+      .products$
+      .pipe(takeUntilDestroyed())
+      .subscribe((products) => {
+      this.dataSource.data = products;
+      this.isLoading = false;
+    });
+  }
+
+  ngAfterViewInit(): void {
+    this.dataSource.paginator = this.paginator;
+    this.dataSource.sort = this.sort;
+
+    // If the user changes the sort order, reset back to the first page.
+    this.sort.sortChange.subscribe(() => (this.paginator.pageIndex = 0));
+  }
+
+  applyFilter(event: Event) {
+    const filterValue = (event.target as HTMLInputElement).value;
+    this.dataSource.filter = filterValue.trim().toLowerCase();
+
+    if (this.dataSource.paginator) {
+      this.dataSource.paginator.firstPage();
+    }
+  }
 
 }
