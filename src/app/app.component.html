@@ -21,7 +21,7 @@
       <mat-nav-list>
 
         @for (lang of langs; track $index) {
-          <button (click)="useLanguage(lang)" mat-raised-button>
+          <button (click)="useLanguage(lang)" mat-raised-button [class.active]="lang===currentLang">
             {{ lang }}
           </button>
         }

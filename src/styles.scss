@@ -21,6 +21,10 @@ body {
   float: right;
 }
 
+button.active {
+  background-color: yellow !important;
+}
+
 .mat-nav-list a.active,
 .mat-nav-list a:focus.active {
   background-color: yellow;

@@ -11,6 +11,7 @@ import { TranslatePipe, TranslateService } from '@ngx-translate/core';
 })
 export class AppComponent {
   isDarkTheme = false;
+  currentLang: string;
 
   langs
 
@@ -19,10 +20,13 @@ export class AppComponent {
     translateService.setDefaultLang('fr')
     translateService.use('fr')
 
+    this.currentLang = translateService.currentLang
+
     this.langs = translateService.langs
   }
 
   useLanguage(language: string): void {
     this.translateService.use(language)
+    this.currentLang = this.translateService.currentLang
   }
 }

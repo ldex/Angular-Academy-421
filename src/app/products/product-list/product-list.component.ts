@@ -10,6 +10,7 @@ import { MatSort } from '@angular/material/sort'
 import { MatTableDataSource } from '@angular/material/table'
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop'
 import { TranslatePipe, TranslateService } from '@ngx-translate/core'
+import { Router } from '@angular/router'
 
 @Component({
   selector: 'app-product-list',
@@ -21,10 +22,12 @@ export class ProductListComponent implements AfterViewInit, OnDestroy, OnInit {
   title: string = 'Products'
   selectedProduct: Product
   private productService = inject(ProductService)
+  private router = inject(Router)
   products$: Observable<Product[]> = this.productService.products$.pipe()
 
   onSelect(product: Product) {
     this.selectedProduct = product
+    this.router.navigateByUrl('/products/' + product.id)
   }
 
   displayedColumns = ['id', 'name', 'description', 'price'];
