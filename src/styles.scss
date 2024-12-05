@@ -1,4 +1,45 @@
-/* You can add global styles to this file, and also import other style files */
+@use 'themes.scss' as themes;
+@use '@angular/material' as mat;
 
-html, body { height: 100%; }
-body { margin: 0; font-family: Roboto, "Helvetica Neue", sans-serif; }
+html {
+  body {
+    background: var(--mat-sys-surface);
+    color: var(--mat-sys-on-surface);
+  }
+}
+
+html,
+body {
+  height: 100%;
+}
+body {
+  margin: 0;
+  font-family: Roboto, "Helvetica Neue", sans-serif;
+}
+
+.right {
+  float: right;
+}
+
+.mat-nav-list a.active,
+.mat-nav-list a:focus.active {
+  background-color: yellow;
+}
+
+.dark-theme .mat-nav-list a.active,
+.dark-theme .mat-nav-list a:focus.active {
+  background-color: #03a9f4;
+}
+
+.dark-theme a {
+  color: white;
+}
+
+*[disabled] {
+    cursor: not-allowed;
+}
+
+.mdc-card {
+    margin: 20px;
+    padding: 20px;
+}

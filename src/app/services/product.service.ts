@@ -16,13 +16,18 @@ export class ProductService {
     this.initProducts()
   }
 
+  resetList() {
+    this.initProducts()
+  }
+
   initProducts() {
       this.products$ = this
                         .http
                         .get<Product[]>(this.baseUrl)
                         .pipe(
                           tap(console.table),
-                          delay(1500) // Pour la démo!!
+                          delay(1500), // Pour la démo!!
+                          shareReplay()
                         )
   }
 }

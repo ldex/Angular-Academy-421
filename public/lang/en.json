@@ -1,0 +1,8 @@
+{
+	"app": {
+		"welcome": "Welcome {{name}}",
+		"home": "Home",
+		"products": "Products",
+		"title": "Angular Store"
+	}
+}
