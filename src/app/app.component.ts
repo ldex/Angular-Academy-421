@@ -27,6 +27,6 @@ export class AppComponent {
 
   useLanguage(language: string): void {
     this.translateService.use(language)
-    this.currentLang = this.translateService.currentLang
+    this.currentLang = language
   }
 }
